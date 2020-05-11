@@ -58,7 +58,6 @@ public class CameraActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         /*动态请求需要的权限*/
         boolean checkPermissionFirst = PermissionUtils.checkPermissionFirst(this, IDCardCamera.PERMISSION_CODE_FIRST,
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA});
@@ -136,11 +135,11 @@ public class CameraActivity extends Activity implements View.OnClickListener {
 
         switch (mType) {
             case IDCardCamera.TYPE_IDCARD_FRONT:
-                mTvPrompt.setText(Html.fromHtml(getString(R.string.prompt_back)));
+                mTvPrompt.setText(Html.fromHtml(getString(R.string.prompt_front)));
                 mIvCameraCrop.setImageResource(R.mipmap.camera_idcard_front);
                 break;
             case IDCardCamera.TYPE_IDCARD_BACK:
-                mTvPrompt.setText(Html.fromHtml(getString(R.string.prompt_front)));
+                mTvPrompt.setText(Html.fromHtml(getString(R.string.prompt_back)));
                 mIvCameraCrop.setImageResource(R.mipmap.camera_idcard_back);
                 break;
         }

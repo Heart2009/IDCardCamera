@@ -24,20 +24,18 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     private static String TAG = CameraPreview.class.getName();
 
-    private Camera           camera;
+    private Camera camera;
     private AutoFocusManager mAutoFocusManager;
-    private SensorControler  mSensorControler;
-    private Context          mContext;
-    private SurfaceHolder    mSurfaceHolder;
+    private SensorControler mSensorControler;
+    private Context mContext;
+    private SurfaceHolder mSurfaceHolder;
 
     public CameraPreview(Context context) {
-        super(context);
-        init(context);
+        this(context, null);
     }
 
     public CameraPreview(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+        this(context, attrs, 0);
     }
 
     public CameraPreview(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -50,7 +48,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context);
     }
-
+boolean needPaint=true;
     private void init(Context context) {
         mContext = context;
         mSurfaceHolder = getHolder();
@@ -58,6 +56,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mSurfaceHolder.setKeepScreenOn(true);
         mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mSensorControler = SensorControler.getInstance(context.getApplicationContext());
+
+        //this.setZOrderOnTop(true);
+        //this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
