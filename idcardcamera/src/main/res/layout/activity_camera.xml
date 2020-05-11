@@ -7,9 +7,9 @@
     <!--相机预览-->
     <com.wildma.idcardcamera.camera.CameraPreview
         android:id="@+id/camera_preview"
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,13 +38,16 @@
                 android:orientation="vertical">
 
                 <!--相机裁剪区域顶部-->
-                <View
-                    android:id="@+id/view_camera_crop_top"
+                <TextView
+                    android:id="@+id/tv_prompt"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:background="@color/preview_mock" />
-
+                    android:gravity="center"
+                    android:lineSpacingExtra="3dp"
+                    android:text="请将身份证国徽面放进扫描框内，\n并对齐边缘，保持照片清晰，避免反光和阴影"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp" />
                 <!--相机裁剪区域-->
                 <ImageView
                     android:id="@+id/iv_camera_crop"
@@ -54,10 +57,10 @@
 
                 <!--手动裁剪区域-->
                 <com.wildma.idcardcamera.cropper.CropImageView
-                    android:visibility="gone"
                     android:id="@+id/crop_image_view"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
 
                 <!--相机裁剪区域底部-->
                 <TextView
@@ -94,7 +97,8 @@
                     android:id="@+id/iv_camera_flash"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@mipmap/camera_flash_off" />
+                    android:src="@mipmap/camera_flash_off"
+                    android:visibility="gone" />
 
                 <ImageView
                     android:id="@+id/iv_camera_take"
@@ -102,12 +106,6 @@
                     android:layout_height="72dp"
                     android:layout_margin="32dp"
                     android:src="@mipmap/camera_take" />
-
-                <ImageView
-                    android:id="@+id/iv_camera_close"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@mipmap/camera_close" />
 
             </LinearLayout>
 
@@ -138,4 +136,13 @@
         </FrameLayout>
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_camera_close"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="15dp"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        android:src="@mipmap/camera_close" />
 </RelativeLayout>

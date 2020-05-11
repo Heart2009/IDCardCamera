@@ -5,10 +5,12 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.wildma.idcardcamera.camera.IDCardCamera;
+import com.wildma.idcardcamera.utils.ImageUtils;
 
 /**
  * Author   wildma
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
                     mIvBack.setImageBitmap(BitmapFactory.decodeFile(path));
                 }
             }
+            String base64Str = ImageUtils.fileToBase64(path);
+            Log.d("base64=", base64Str);
         }
     }
 }

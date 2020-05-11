@@ -6,12 +6,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.text.TextUtils;
+import android.util.Base64;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -117,5 +121,37 @@ public class ImageUtils {
         byte[] tmp = os.toByteArray();
         Bitmap bmp = BitmapFactory.decodeByteArray(tmp, 0, tmp.length);
         return bmp;
+    }
+
+    /**
+     * 图片文件转化成base64字符串
+     *
+     * @param imgFile
+     * @return
+     */
+    public static String fileToBase64(String imgFile) {
+        InputStream in = null;
+        String base64 = null;
+        // 读取图片字节数组
+        try {
+            if (TextUtils.isEmpty(imgFile)) {
+                return "";
+            }
+            in = new FileInputStream(imgFile);
+            byte[] bytes = new byte[in.available()];
+            int length = in.read(bytes);
+            base64 = Base64.encodeToString(bytes, 0, length, Base64.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return String.format("data:image/jpeg;base64,%s", base64);
     }
 }

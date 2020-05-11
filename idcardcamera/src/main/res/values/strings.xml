@@ -4,4 +4,7 @@
     <string name="touch_to_focus">触摸屏幕对焦</string>
     <string name="crop_fail">裁剪失败</string>
     <string name="no_flash">该设备不支持闪光灯</string>
+    <string name="prompt_back"><![CDATA[请将身份证<font color=\'#f5a520\'>国徽面</font>放进扫描框内，<br/>并对齐边缘，保持照片清晰，避免反光和阴影]]></string>
+    <string name="prompt_front"><![CDATA[请将身份证<font color=\'#f5a520\'>头像面</font>放进扫描框内，<br/>并对齐边缘，保持照片清晰，避免反光和阴影]]></string>
+    <string name="take_fail">拍摄失败</string>
 </resources>

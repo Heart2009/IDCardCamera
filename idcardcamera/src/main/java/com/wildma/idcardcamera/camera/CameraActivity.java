@@ -10,6 +10,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,18 +40,19 @@ import com.wildma.idcardcamera.utils.ScreenUtils;
 public class CameraActivity extends Activity implements View.OnClickListener {
 
     private CropImageView mCropImageView;
-    private Bitmap        mCropBitmap;
+    private Bitmap mCropBitmap;
     private CameraPreview mCameraPreview;
-    private View          mLlCameraCropContainer;
-    private ImageView     mIvCameraCrop;
-    private ImageView     mIvCameraFlash;
-    private View          mLlCameraOption;
-    private View          mLlCameraResult;
-    private TextView      mViewCameraCropBottom;
-    private FrameLayout   mFlCameraOption;
-    private View          mViewCameraCropLeft;
+    private View mLlCameraCropContainer;
+    private ImageView mIvCameraCrop;
+    private ImageView mIvCameraFlash;
+    private View mLlCameraOption;
+    private View mLlCameraResult;
+    private TextView mViewCameraCropBottom;
+    private TextView mTvPrompt;
+    private FrameLayout mFlCameraOption;
+    private View mViewCameraCropLeft;
 
-    private int     mType;//拍摄类型
+    private int mType;//拍摄类型
     private boolean isToast = true;//是否弹吐司，为了保证for循环只弹一次
 
     @Override
@@ -116,10 +118,11 @@ public class CameraActivity extends Activity implements View.OnClickListener {
         mViewCameraCropBottom = (TextView) findViewById(R.id.view_camera_crop_bottom);
         mFlCameraOption = (FrameLayout) findViewById(R.id.fl_camera_option);
         mViewCameraCropLeft = findViewById(R.id.view_camera_crop_left);
+        mTvPrompt = findViewById(R.id.tv_prompt);
 
         float screenMinSize = Math.min(ScreenUtils.getScreenWidth(this), ScreenUtils.getScreenHeight(this));
         float screenMaxSize = Math.max(ScreenUtils.getScreenWidth(this), ScreenUtils.getScreenHeight(this));
-        float height = (int) (screenMinSize * 0.75);
+        float height = (int) (screenMinSize * 0.61);//0.75
         float width = (int) (height * 75.0f / 47.0f);
         //获取底部"操作区域"的宽度
         float flCameraOptionWidth = (screenMaxSize - width) / 2;
@@ -133,9 +136,11 @@ public class CameraActivity extends Activity implements View.OnClickListener {
 
         switch (mType) {
             case IDCardCamera.TYPE_IDCARD_FRONT:
+                mTvPrompt.setText(Html.fromHtml(getString(R.string.prompt_back)));
                 mIvCameraCrop.setImageResource(R.mipmap.camera_idcard_front);
                 break;
             case IDCardCamera.TYPE_IDCARD_BACK:
+                mTvPrompt.setText(Html.fromHtml(getString(R.string.prompt_front)));
                 mIvCameraCrop.setImageResource(R.mipmap.camera_idcard_back);
                 break;
         }
@@ -208,7 +213,8 @@ public class CameraActivity extends Activity implements View.OnClickListener {
                         final int w = size.width;
                         final int h = size.height;
                         Bitmap bitmap = ImageUtils.getBitmapFromByte(bytes, w, h);
-                        cropImage(bitmap);
+                        //cropImage(bitmap);
+                        saveImage(getCropBitmap(bitmap));
                     }
                 }).start();
             }
@@ -219,6 +225,21 @@ public class CameraActivity extends Activity implements View.OnClickListener {
      * 裁剪图片
      */
     private void cropImage(Bitmap bitmap) {
+        mCropBitmap = getCropBitmap(bitmap);
+
+        /*设置成手动裁剪模式*/
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //将手动裁剪区域设置成与扫描框一样大
+                mCropImageView.setLayoutParams(new LinearLayout.LayoutParams(mIvCameraCrop.getWidth(), mIvCameraCrop.getHeight()));
+                setCropLayout();
+                mCropImageView.setImageBitmap(mCropBitmap);
+            }
+        });
+    }
+
+    private Bitmap getCropBitmap(Bitmap bitmap) {
         /*计算扫描框的坐标点*/
         float left = mViewCameraCropLeft.getWidth();
         float top = mIvCameraCrop.getTop();
@@ -232,22 +253,11 @@ public class CameraActivity extends Activity implements View.OnClickListener {
         float bottomProportion = bottom / mCameraPreview.getBottom();
 
         /*自动裁剪*/
-        mCropBitmap = Bitmap.createBitmap(bitmap,
+        return Bitmap.createBitmap(bitmap,
                 (int) (leftProportion * (float) bitmap.getWidth()),
                 (int) (topProportion * (float) bitmap.getHeight()),
                 (int) ((rightProportion - leftProportion) * (float) bitmap.getWidth()),
                 (int) ((bottomProportion - topProportion) * (float) bitmap.getHeight()));
-
-        /*设置成手动裁剪模式*/
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //将手动裁剪区域设置成与扫描框一样大
-                mCropImageView.setLayoutParams(new LinearLayout.LayoutParams(mIvCameraCrop.getWidth(), mIvCameraCrop.getHeight()));
-                setCropLayout();
-                mCropImageView.setImageBitmap(mCropBitmap);
-            }
-        });
     }
 
     /**
@@ -288,26 +298,34 @@ public class CameraActivity extends Activity implements View.OnClickListener {
                     Toast.makeText(getApplicationContext(), getString(R.string.crop_fail), Toast.LENGTH_SHORT).show();
                     finish();
                 }
+                saveImage(bitmap);
 
-                /*保存图片到sdcard并返回图片路径*/
-                if (FileUtils.createOrExistsDir(Constant.DIR_ROOT)) {
-                    StringBuffer buffer = new StringBuffer();
-                    String imagePath = "";
-                    if (mType == IDCardCamera.TYPE_IDCARD_FRONT) {
-                        imagePath = buffer.append(Constant.DIR_ROOT).append(Constant.APP_NAME).append(".").append("idCardFrontCrop.jpg").toString();
-                    } else if (mType == IDCardCamera.TYPE_IDCARD_BACK) {
-                        imagePath = buffer.append(Constant.DIR_ROOT).append(Constant.APP_NAME).append(".").append("idCardBackCrop.jpg").toString();
-                    }
-
-                    if (ImageUtils.save(bitmap, imagePath, Bitmap.CompressFormat.JPEG)) {
-                        Intent intent = new Intent();
-                        intent.putExtra(IDCardCamera.IMAGE_PATH, imagePath);
-                        setResult(IDCardCamera.RESULT_CODE, intent);
-                        finish();
-                    }
-                }
             }
         }, true);
+    }
+
+    private void saveImage(Bitmap bitmap) {
+        if (bitmap == null) {
+            Toast.makeText(getApplicationContext(), getString(R.string.take_fail), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        /*保存图片到sdcard并返回图片路径*/
+        if (FileUtils.createOrExistsDir(Constant.DIR_ROOT)) {
+            StringBuffer buffer = new StringBuffer();
+            String imagePath = "";
+            if (mType == IDCardCamera.TYPE_IDCARD_FRONT) {
+                imagePath = buffer.append(Constant.DIR_ROOT).append(Constant.APP_NAME).append(".").append("idCardFrontCrop.jpg").toString();
+            } else if (mType == IDCardCamera.TYPE_IDCARD_BACK) {
+                imagePath = buffer.append(Constant.DIR_ROOT).append(Constant.APP_NAME).append(".").append("idCardBackCrop.jpg").toString();
+            }
+
+            if (ImageUtils.save(bitmap, imagePath, Bitmap.CompressFormat.JPEG)) {
+                Intent intent = new Intent();
+                intent.putExtra(IDCardCamera.IMAGE_PATH, imagePath);
+                setResult(IDCardCamera.RESULT_CODE, intent);
+                finish();
+            }
+        }
     }
 
     @Override
