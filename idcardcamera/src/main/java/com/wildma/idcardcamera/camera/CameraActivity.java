@@ -243,7 +243,7 @@ public class CameraActivity extends Activity implements View.OnClickListener {
         int dx = ScreenUtils.dp2px(this, 10);
         float left = mViewCameraCropLeft.getWidth() - dx;
         float top = mIvCameraCrop.getTop() - dx;
-        float right = mIvCameraCrop.getRight() + left + dx;
+        float right = mIvCameraCrop.getRight() + left + 2 * dx;
         float bottom = mIvCameraCrop.getBottom() + dx;
 
         /*计算扫描框坐标点占原图坐标点的比例*/
