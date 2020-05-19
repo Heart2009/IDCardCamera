@@ -240,10 +240,11 @@ public class CameraActivity extends Activity implements View.OnClickListener {
 
     private Bitmap getCropBitmap(Bitmap bitmap) {
         /*计算扫描框的坐标点*/
-        float left = mViewCameraCropLeft.getWidth();
-        float top = mIvCameraCrop.getTop();
-        float right = mIvCameraCrop.getRight() + left;
-        float bottom = mIvCameraCrop.getBottom();
+        int dx = ScreenUtils.dp2px(this, 10);
+        float left = mViewCameraCropLeft.getWidth() - dx;
+        float top = mIvCameraCrop.getTop() - dx;
+        float right = mIvCameraCrop.getRight() + left + dx;
+        float bottom = mIvCameraCrop.getBottom() + dx;
 
         /*计算扫描框坐标点占原图坐标点的比例*/
         float leftProportion = left / mCameraPreview.getWidth();
