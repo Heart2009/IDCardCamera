@@ -77,6 +77,11 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/preview_mock" />
         </LinearLayout>
 
         <!--右侧操作布局-->
